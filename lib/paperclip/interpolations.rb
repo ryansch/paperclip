@@ -6,13 +6,13 @@ module Paperclip
   module Interpolations
     extend self
 
-    # Hash assignment of interpolations. Included only for compatability,
+    # Hash assignment of interpolations. Included only for compatibility,
     # and is not intended for normal use.
     def self.[]= name, block
       define_method(name, &block)
     end
 
-    # Hash access of interpolations. Included only for compatability,
+    # Hash access of interpolations. Included only for compatibility,
     # and is not intended for normal use.
     def self.[] name
       method(name)
@@ -35,7 +35,7 @@ module Paperclip
 
     # Returns the filename, the same way as ":basename.:extension" would.
     def filename attachment, style_name
-      "#{basename(attachment, style_name)}.#{extension(attachment, style_name)}"
+      [ basename(attachment, style_name), extension(attachment, style_name) ].reject(&:blank?).join(".")
     end
 
     # Returns the interpolated URL. Will raise an error if the url itself

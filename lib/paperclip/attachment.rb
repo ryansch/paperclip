@@ -11,6 +11,7 @@ module Paperclip
         :url                   => "/system/:attachment/:id/:style/:filename",
         :path                  => ":rails_root/public:url",
         :styles                => {},
+        :only_process          => [],
         :processors            => [:thumbnail],
         :convert_options       => {},
         :default_url           => "/:attachment/:style/missing.png",
@@ -41,6 +42,7 @@ module Paperclip
       @path                  = options[:path]
       @path                  = @path.call(self) if @path.is_a?(Proc)
       @styles                = options[:styles]
+      @only_process          = options[:only_process]
       @normalized_styles     = nil
       @default_url           = options[:default_url]
       @default_style         = options[:default_style]
@@ -107,7 +109,7 @@ module Paperclip
 
       @dirty = true
 
-      post_process if @post_processing
+      post_process(*@only_process) if @post_processing
 
       # Reset the file size if the original file was reprocessed.
       instance_write(:file_size,   @queued_for_write[:original].size.to_i)
@@ -123,7 +125,8 @@ module Paperclip
     # security, however, for performance reasons. Set use_timestamp to false
     # if you want to stop the attachment update time appended to the url
     def url(style_name = default_style, use_timestamp = @use_timestamp)
-      url = original_filename.nil? ? interpolate(@default_url, style_name) : interpolate(@url, style_name)
+      default_url = @default_url.is_a?(Proc) ? @default_url.call(self) : @default_url
+      url = original_filename.nil? ? interpolate(default_url, style_name) : interpolate(@url, style_name)
       use_timestamp && updated_at ? [url, updated_at].compact.join(url.include?("?") ? "&" : "?") : url
     end
 

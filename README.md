@@ -18,13 +18,6 @@ more detailed options.
 
 The complete [RDoc](http://rdoc.info/gems/paperclip) is online.
 
-Changes in this repo
-------------
-
-Allowed to refresh images of classes with namespaces. For example:
-
-    rake paperclip:refresh CLASS='User::Asset'
-
 Requirements
 ------------
 
@@ -43,13 +36,23 @@ In development mode, you might add this line to `config/environments/development
 Installation
 ------------
 
+Paperclip is distributed as a gem, which is how it should be used in your app. It's
+technically still installable as a plugin, but that's discouraged, as Rails plays
+well with gems.
+
 Include the gem in your Gemfile:
 
     gem "paperclip", "~> 2.3"
 
-Or as a plugin:
+Or, if you don't use Bundler (though you probably should, even in Rails 2), with config.gem
 
-  ruby script/plugin install git://github.com/thoughtbot/paperclip.git
+    # In config/environment.rb
+    ...
+    Rails::Initializer.run do |config|
+      ...
+      config.gem "paperclip", :version => "~> 2.3"
+      ...
+    end
 
 Quick Start
 -----------
@@ -102,7 +105,7 @@ Usage
 The basics of paperclip are quite simple: Declare that your model has an
 attachment with the has_attached_file method, and give it a name. Paperclip
 will wrap up up to four attributes (all prefixed with that attachment's name,
-so you can have multiple attachments per model if you wish) and give the a
+so you can have multiple attachments per model if you wish) and give them a
 friendly front end. The attributes are `<attachment>_file_name`,
 `<attachment>_file_size`, `<attachment>_content_type`, and `<attachment>_updated_at`.
 Only `<attachment>_file_name` is required for paperclip to operate. More
@@ -185,6 +188,9 @@ or more or the processors, and they are expected to ignore it.
 _NOTE: Because processors operate by turning the original attachment into the
 styles, no processors will be run if there are no styles defined._
 
+If you're interested in caching your thumbnail's width, height and size in the 
+database, take a look at the [paperclip-meta](https://github.com/y8/paperclip-meta) gem.
+
 Events
 ------
 
@@ -203,11 +209,19 @@ _NOTE: Post processing will not even *start* if the attachment is not valid
 according to the validations. Your callbacks and processors will *only* be
 called with valid attachments._
 
+URI Obfuscation
+---------------
+
+Paperclip has an interpolation called `:hash` for obfuscating filenames of publicly-available files. For more on this feature read author's own explanation.
+
+[https://github.com/thoughtbot/paperclip/pull/416](https://github.com/thoughtbot/paperclip/pull/416)
+
 Testing
 -------
 
 Paperclip provides rspec-compatible matchers for testing attachments. See the
-documentation on Paperclip::Shoulda::Matchers for more information.
+documentation on [Paperclip::Shoulda::Matchers](http://rubydoc.info/gems/paperclip/Paperclip/Shoulda/Matchers)
+for more information.
 
 Contributing
 ------------
